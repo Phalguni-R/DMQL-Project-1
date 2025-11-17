@@ -3,8 +3,8 @@ services:
     image: postgres:13
     container_name: fma_postgres_db
     environment:
-      POSTGRES_USER: arun-ghontale # Change this
-      POSTGRES_PASSWORD: arun1234 # Change this
+      POSTGRES_USER: common-user-aph # Change this
+      POSTGRES_PASSWORD: aph1234 # Change this
       POSTGRES_DB: fma_db # The database name
     ports:
       - "5432:5432"
