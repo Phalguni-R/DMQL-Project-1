@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS "Social", "Audio", "TrackLyricists", "TrackGenres", "AlbumE
 CREATE TABLE "Genres" (
     "genre_id" INTEGER PRIMARY KEY,
     "parent_id" INTEGER REFERENCES "Genres"("genre_id"),
-    "title" VARCHAR(100) NOT NULL UNIQUE
+    "genre_name" VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE "Engineers" (
