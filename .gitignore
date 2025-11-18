@@ -7,3 +7,4 @@ fma_metadata_sampled
 *.zip
 *.txt
 env/
+.env
