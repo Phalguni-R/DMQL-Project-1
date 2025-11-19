@@ -2,9 +2,9 @@
 .idea
 *.json
 fma_metadata
-fma_metadata_cleaned
 fma_metadata_sampled
 *.zip
 *.txt
 env/
 .env
+fma_metadata_cleaned
