@@ -44,3 +44,37 @@ WHERE s.song_hotttnesss > 0.6
   AND t.track_listens < (SELECT AVG(track_listens) FROM "Tracks")
 ORDER BY s.song_hotttnesss DESC
 LIMIT 50;
+
+-- 4. Artist Profiling (Subquery)
+
+SELECT 
+    a.artist_id,
+    a.artist_name,
+    a.artist_active_year_begin,
+    a.artist_favorites,
+    COUNT(DISTINCT al.album_id) as album_count,
+    COUNT(DISTINCT t.track_id) as track_count,
+    -- May need to use COALESCE(SUM(t.track_listens), 0) as total_listens,
+    SUM(t.track_listens) as total_listens,
+    -- May need to use COALESCE(SUM(t.track_favorites), 0) as total_listens,
+    SUM(t.track_favorites) as total_track_favorites,
+    STRING_AGG(DISTINCT l.label_name, ', ') as associated_labels,
+    -- Getting most common genre for an artist
+    (
+        SELECT g.genre_name
+        FROM "TrackGenres" tg
+        JOIN "Genres" g ON tg.genre_id = g.genre_id
+        JOIN "Tracks" t2 ON tg.track_id = t2.track_id
+        WHERE t2.artist_id = a.artist_id
+        GROUP BY g.genre_name
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+    ) as top_genre
+FROM "Artists" a
+LEFT JOIN "Albums" al ON a.artist_id = al.artist_id
+LEFT JOIN "Tracks" t ON a.artist_id = t.artist_id
+LEFT JOIN "Social" s ON t.track_id = s.track_id
+LEFT JOIN "ArtistLabels" arl ON a.artist_id = arl.artist_id
+LEFT JOIN "Labels" l ON arl.label_id = l.label_id
+GROUP BY a.artist_id, a.artist_name, a.artist_active_year_begin, a.artist_favorites
+ORDER BY total_listens DESC, artist_favorites DESC;
