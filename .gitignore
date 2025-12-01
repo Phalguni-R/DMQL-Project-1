@@ -7,3 +7,7 @@ fma_metadata_sampled
 *.txt
 env/
 .env
+StarSchemaReport.docx
+StarSchemaDiagram.svg
+PerformanceTuningReport.docx
+logs
