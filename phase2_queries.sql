@@ -53,10 +53,8 @@ SELECT
     a.artist_favorites,
     COUNT(DISTINCT al.album_id) as album_count,
     COUNT(DISTINCT t.track_id) as track_count,
-    -- May need to use COALESCE(SUM(t.track_listens), 0) as total_listens,
-    SUM(t.track_listens) as total_listens,
-    -- May need to use COALESCE(SUM(t.track_favorites), 0) as total_listens,
-    SUM(t.track_favorites) as total_track_favorites,
+    COALESCE(SUM(t.track_listens), 0) as total_listens,
+    COALESCE(SUM(t.track_favorites), 0) as total_track_favorites,
     STRING_AGG(DISTINCT l.label_name, ', ') as associated_labels,
     -- Getting most common genre for an artist
     (
