@@ -5,6 +5,7 @@ SELECT
     t.artist_id,
     t.track_date_recorded,
     t.track_listens,
+    t.track_favorites,
     a.danceability,
     a.energy,
     s.song_hotttnesss

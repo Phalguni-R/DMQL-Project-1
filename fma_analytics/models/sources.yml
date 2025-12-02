@@ -5,9 +5,12 @@ sources:
     database: fma_db
     schema: public
     tables:
-      - name: Tracks
       - name: Artists
+      - name: Albums
+      - name: Tracks
       - name: Genres
+      - name: Labels
       - name: Audio
       - name: Social
       - name: TrackGenres
+      - name: ArtistLabels
