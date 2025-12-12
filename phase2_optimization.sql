@@ -5,7 +5,7 @@ CREATE INDEX IF NOT EXISTS idx_audio_track_id ON public."Audio"(track_id);
 CREATE INDEX IF NOT EXISTS idx_tracks_date_recorded ON public."Tracks"(track_date_recorded);
 CREATE INDEX IF NOT EXISTS idx_tracks_artist_id ON public."Tracks"(artist_id);
 CREATE INDEX IF NOT EXISTS idx_social_hotttnesss ON public."Social"(song_hotttnesss);
-CREATE INDEX IF EXISTS idx_social_track_id ON public."Social"(track_id);
+CREATE INDEX IF NOT EXISTS idx_social_track_id ON public."Social"(track_id);
 CREATE INDEX IF NOT EXISTS idx_artistlabels_label_id ON public."ArtistLabels"(label_id);
 CREATE INDEX IF NOT EXISTS idx_artistlabels_artist_id ON public."ArtistLabels"(artist_id);
 CREATE INDEX IF NOT EXISTS idx_albums_artist_id ON public."Albums"(artist_id);

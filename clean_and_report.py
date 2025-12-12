@@ -10,7 +10,8 @@ CLEANED_DATA_DIR = 'fma_metadata_cleaned'
 COLUMNS_TO_KEEP = {
     'genres': ['genre_id', 'genre_parent_id', 'genre_title'],
     'artists': ['artist_id', 'artist_active_year_begin', 'artist_associated_labels', 'artist_contact',
-                'artist_favorites', 'artist_handle', 'artist_members', 'artist_name', 'artist_website'],
+                'artist_favorites', 'artist_handle', 'artist_members', 'artist_name', 'artist_website',
+                'artist_latitude', 'artist_longitude', 'artist_location'],
     'albums': ['album_id', 'album_date_released', 'album_engineer', 'album_favorites', 'album_listens',
                'album_producer', 'album_title', 'album_tracks', 'album_type', 'artist_name', 'album_url'],
     'tracks': ['track_id', 'album_id', 'artist_id', 'license_title', 'license_url', 'track_bit_rate', 'track_composer',

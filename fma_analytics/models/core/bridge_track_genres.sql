@@ -3,4 +3,4 @@
 SELECT
     track_id,
     genre_id
-FROM {{ source('fma', 'TrackGenres') }}
+FROM {{ source('public', 'TrackGenres') }}

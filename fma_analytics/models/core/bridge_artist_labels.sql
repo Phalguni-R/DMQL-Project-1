@@ -3,4 +3,4 @@
 SELECT
     artist_id,
     label_id
-FROM {{ source('fma', 'ArtistLabels') }}
+FROM {{ source('public', 'ArtistLabels') }}

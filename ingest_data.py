@@ -175,12 +175,15 @@ def insert_artists(engine, artists_df):
     print("\nInserting Artists...")
 
     artists = artists_df[['artist_id', 'artist_name', 'artist_handle', 'artist_website',
-                          'artist_active_year_begin', 'artist_favorites']].copy()
+                          'artist_active_year_begin', 'artist_favorites',
+                          'artist_latitude', 'artist_longitude', 'artist_location']].copy()
 
     # Convert numeric columns properly (some might be strings or have bad data)
     artists['artist_active_year_begin'] = pd.to_numeric(artists['artist_active_year_begin'], errors='coerce').astype(
         'Int64')
     artists['artist_favorites'] = pd.to_numeric(artists['artist_favorites'], errors='coerce').astype('Int64')
+    artists['artist_latitude'] = pd.to_numeric(artists['artist_latitude'], errors='coerce')
+    artists['artist_longitude'] = pd.to_numeric(artists['artist_longitude'], errors='coerce')
 
     count = insert_data(engine, 'Artists', artists.to_dict(orient='records'))
     print(f"  Inserted {count} artists")

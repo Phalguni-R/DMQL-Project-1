@@ -9,6 +9,6 @@ SELECT
     a.danceability,
     a.energy,
     s.song_hotttnesss
-FROM {{ source('fma', 'Tracks') }} t
-LEFT JOIN {{ source('fma', 'Audio') }} a ON t.track_id = a.track_id
-LEFT JOIN {{ source('fma', 'Social') }} s ON t.track_id = s.track_id
+FROM {{ source('public', 'Tracks') }} t
+LEFT JOIN {{ source('public', 'Audio') }} a ON t.track_id = a.track_id
+LEFT JOIN {{ source('public', 'Social') }} s ON t.track_id = s.track_id

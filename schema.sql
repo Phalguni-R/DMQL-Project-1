@@ -49,7 +49,10 @@ CREATE TABLE "Artists" (
     "artist_handle" VARCHAR(255),
     "artist_website" VARCHAR(512),
     "artist_active_year_begin" INTEGER,
-    "artist_favorites" INTEGER
+    "artist_favorites" INTEGER,
+    "artist_latitude" REAL,
+    "artist_longitude" REAL,
+    "artist_location" TEXT
 );
 
 CREATE TABLE "Albums" (

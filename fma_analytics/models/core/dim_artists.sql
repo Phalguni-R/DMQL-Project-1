@@ -6,5 +6,8 @@ SELECT
     artist_handle,
     artist_website,
     artist_active_year_begin,
-    artist_favorites
-FROM {{ source('fma', 'Artists') }}
+    artist_favorites,
+    artist_latitude,
+    artist_longitude,
+    artist_location
+FROM {{ source('public', 'Artists') }}

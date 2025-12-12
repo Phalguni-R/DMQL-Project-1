@@ -9,4 +9,4 @@ SELECT
     album_listens,
     album_favorites,
     artist_id
-FROM {{ source('fma', 'Albums') }}
+FROM {{ source('public', 'Albums') }}

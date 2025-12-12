@@ -3,13 +3,43 @@ services:
     image: postgres:13
     container_name: fma_postgres_db
     environment:
-      POSTGRES_USER: common-user-aph # Change this
-      POSTGRES_PASSWORD: aph1234 # Change this
-      POSTGRES_DB: fma_db # The database name
+      POSTGRES_USER: common-user-aph
+      POSTGRES_PASSWORD: aph1234
+      POSTGRES_DB: fma_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fma_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U common-user-aph -d fma_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  streamlit:
+    build:
+      context: .              # ← Build from root instead of ./streamlit_app
+      dockerfile: streamlit_app/Dockerfile
+    container_name: fma_streamlit_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fma_network
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    volumes:
+      - ./streamlit_app:/app
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+
+networks:
+  fma_network:
+    driver: bridge
