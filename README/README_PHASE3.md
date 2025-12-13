@@ -1,77 +1,114 @@
-# Phase 3: Streamlit Dashboard
+# Complete Setup - Phase 1 to 3
 
-## 👥 Team Structure
-
-**3 Team Members × 2 Visualizations Each = 6 Total Visualizations**
-
-- **Arun** - Page 1 (✅ COMPLETE)
-  - Genre Radar Chart
-  - Artist Geographic Heatmap
-
-- **Phalguni** - Page 2 (🚧 TODO)
-  - Visualization 1: TBD
-  - Visualization 2: TBD
-
-- **Halle** - Page 3 (🚧 TODO)
-  - Visualization 1: TBD
-  - Visualization 2: TBD
+## Prerequisites
+- Docker running
+- Python 3.9+
+- Raw CSV files in `fma_metadata/`
 
 ---
 
-## 🚀 How to Run
-
-### Step 1: Make sure you have all files in place
-
-```
-your-project/
-├── streamlit_app/
-│   ├── app.py
-│   ├── .streamlit/config.toml
-│   ├── pages/
-│   │   ├── 1_Arun_Visualizations.py
-│   │   ├── 2_Phalguni_Visualizations.py
-│   │   └── 3_Halle_Visualizations.py
-│   ├── utils/
-│   │   ├── db_connection.py
-│   │   └── queries.py
-│   ├── Dockerfile
-│   └── requirements.txt
-├── docker-compose.yml (NEW - replaced)
-└── ... (your existing Phase 1 & 2 files)
-```
-
-### Step 2: Stop existing containers
+## Clean Start (if restarting)
 
 ```bash
-docker compose down
+docker compose down -v
+rm -rf fma_metadata_cleaned/
+cd fma_analytics && rm -rf target/ logs/ && cd ..
 ```
-
-### Step 3: Start everything
-
-```bash
-docker compose up -d --build
-```
-
-### Step 4: Access dashboard
-
-Open browser: **http://localhost:8501**
 
 ---
 
-## 🐛 Troubleshooting
+## Setup
 
-**Dashboard won't load?**
+### Install Dependencies
 ```bash
-docker compose ps              # Check status
-docker compose logs streamlit  # Check logs
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-**Database connection error?**
+### Create .env file
 ```bash
+cat > .env << 'EOF'
+DB_USER=common-user-aph
+DB_PASSWORD=aph1234
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=fma_db
+EOF
+```
+
+---
+
+## PHASE 1: Database & Data
+
+```bash
+# Start database
+docker compose up -d postgres
+sleep 10
+
+# Create schema
+docker compose exec -T postgres psql -U common-user-aph -d fma_db < schema.sql
+
+# Clean data
+python clean_and_report.py
+
+# Ingest data
+python ingest_data.py
+
+# Verify
+docker compose exec postgres psql -U common-user-aph -d fma_db -c "SELECT COUNT(*) FROM \"Artists\";"
+```
+
+---
+
+## PHASE 2: dbt Analytics
+
+```bash
+# Create indexes
+docker compose exec -T postgres psql -U common-user-aph -d fma_db < phase2_optimization.sql
+
+# Build dbt models
+cd fma_analytics
+dbt debug
+dbt run
+cd ..
+
+# Verify
 docker compose exec postgres psql -U common-user-aph -d fma_db -c "\dt analytics.*"
 ```
 
-**Port already in use?**
+---
+
+## PHASE 3: Streamlit Dashboard
+
 ```bash
-lsof -ti:8501 | xargs kill -9  # Mac/Linux
+# Build and start
+docker compose down
+docker compose up -d --build
+
+# Verify
+docker compose ps
+docker compose logs streamlit
 ```
+
+**Open:** http://localhost:8501
+
+---
+
+## Quick Commands
+
+```bash
+# Stop everything
+docker compose down
+
+# Start everything
+docker compose up -d
+
+# Restart streamlit only
+docker compose restart streamlit
+
+# View logs
+docker compose logs -f streamlit
+
+# Rebuild dbt
+cd fma_analytics && dbt run && cd ..
