@@ -17,10 +17,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from utils.db_connection import execute_query
-from utils.queries import (
-    get_genre_audio_features,
-    get_available_genres,
-    get_artist_geographic_data,
+from utils.queries_halle import (
     get_year_range, 
     get_top_genres_yearly
 )

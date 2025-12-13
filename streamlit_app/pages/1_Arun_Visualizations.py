@@ -14,11 +14,12 @@ import sys
 
 sys.path.append('..')
 from utils.db_connection import execute_query
-from utils.queries import (
+from utils.queries_arun import (
     get_genre_audio_features,
     get_available_genres,
     get_artist_geographic_data,
-    get_year_range
+    get_year_range,
+    get_artist_timeline_data  # ADD THIS LINE
 )
 
 # Page config
@@ -239,3 +240,185 @@ else:
 
 st.markdown("---")
 st.caption("Arun's Visualizations | DMQL Phase 3")
+# ============================================
+# VISUALIZATION 3: ARTIST TIMELINE
+# ============================================
+
+st.header("📈 Artist Popularity Timeline")
+st.markdown("Watch artists rise and fall through the years")
+
+# Controls
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    min_year_timeline = st.slider(
+        "Select Year Range",
+        min_value=1920,
+        max_value=2020,
+        value=(2010, 2020),
+        help="Shorter range = smoother animation"
+    )
+
+with col2:
+    top_n_artists = st.slider(
+        "Artists per Year",
+        min_value=5,
+        max_value=12,
+        value=10
+    )
+
+# Query data
+timeline_df = execute_query(get_artist_timeline_data(top_n_artists))
+
+if not timeline_df.empty:
+    timeline_df = timeline_df[
+        (timeline_df['year'] >= min_year_timeline[0]) &
+        (timeline_df['year'] <= min_year_timeline[1])
+        ]
+
+    if not timeline_df.empty:
+        # Get unique years
+        years = sorted(timeline_df['year'].unique())
+
+        # Get max value for consistent x-axis
+        max_val = timeline_df['popularity_score'].max()
+
+        # Create frames manually
+        frames = []
+        for year in years:
+            year_data = timeline_df[timeline_df['year'] == year].sort_values('popularity_score', ascending=True)
+            frame = go.Frame(
+                data=[go.Bar(
+                    x=year_data['popularity_score'],
+                    y=year_data['artist_name'],
+                    orientation='h',
+                    marker=dict(
+                        color=year_data['popularity_score'],
+                        colorscale='Viridis',
+                        showscale=False
+                    ),
+                    text=year_data['popularity_score'],
+                    texttemplate='%{text:,.0f}',
+                    textposition='outside',
+                    hovertemplate='<b>%{y}</b><br>Listens: %{x:,.0f}<extra></extra>'
+                )],
+                name=str(year)
+            )
+            frames.append(frame)
+
+        # Create initial figure with first year
+        first_year_data = timeline_df[timeline_df['year'] == years[0]].sort_values('popularity_score', ascending=True)
+
+        fig = go.Figure(
+            data=[go.Bar(
+                x=first_year_data['popularity_score'],
+                y=first_year_data['artist_name'],
+                orientation='h',
+                marker=dict(
+                    color=first_year_data['popularity_score'],
+                    colorscale='Viridis',
+                    showscale=False
+                ),
+                text=first_year_data['popularity_score'],
+                texttemplate='%{text:,.0f}',
+                textposition='outside',
+                hovertemplate='<b>%{y}</b><br>Listens: %{x:,.0f}<extra></extra>'
+            )],
+            frames=frames
+        )
+
+        # Update layout with fixed positioning
+        fig.update_layout(
+            title={
+                'text': f"Top {top_n_artists} Artists - {years[0]}",
+                'x': 0.5,
+                'xanchor': 'center'
+            },
+            xaxis={
+                'title': 'Total Listens',
+                'range': [0, max_val * 1.15]
+            },
+            yaxis={
+                'title': ''
+            },
+            height=650,
+            showlegend=False,
+            margin=dict(l=150, r=50, t=100, b=100),
+            updatemenus=[{
+                'type': 'buttons',
+                'showactive': False,
+                'buttons': [
+                    {
+                        'label': '▶️ Play',
+                        'method': 'animate',
+                        'args': [None, {
+                            'frame': {'duration': 1000, 'redraw': True},
+                            'fromcurrent': True,
+                            'transition': {'duration': 300, 'easing': 'linear'}
+                        }]
+                    },
+                    {
+                        'label': '⏸️ Pause',
+                        'method': 'animate',
+                        'args': [[None], {
+                            'frame': {'duration': 0, 'redraw': False},
+                            'mode': 'immediate',
+                            'transition': {'duration': 0}
+                        }]
+                    }
+                ],
+                'direction': 'left',
+                'pad': {'r': 10, 't': 70},
+                'x': 0.1,
+                'xanchor': 'left',
+                'y': 1.18,
+                'yanchor': 'top'
+            }],
+            sliders=[{
+                'active': 0,
+                'yanchor': 'top',
+                'y': -0.15,
+                'xanchor': 'left',
+                'currentvalue': {
+                    'prefix': 'Year: ',
+                    'visible': True,
+                    'xanchor': 'center'
+                },
+                'pad': {'b': 10, 't': 50},
+                'len': 0.9,
+                'x': 0.05,
+                'steps': [
+                    {
+                        'args': [
+                            [str(year)],
+                            {
+                                'frame': {'duration': 500, 'redraw': True},
+                                'mode': 'immediate',
+                                'transition': {'duration': 300}
+                            }
+                        ],
+                        'label': str(year),
+                        'method': 'animate'
+                    } for year in years
+                ]
+            }]
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Summary
+        st.info(
+            f"📊 Click ▶️ Play to watch the top {top_n_artists} artists change from {min_year_timeline[0]} to {min_year_timeline[1]}!")
+
+        with st.expander("🏆 All-Time Leaders in This Period"):
+            leaders = timeline_df.groupby('artist_name')['popularity_score'].sum().sort_values(ascending=False).head(
+                20).reset_index()
+            leaders.columns = ['Artist', 'Total Listens']
+            leaders.index = leaders.index + 1
+            st.dataframe(leaders, use_container_width=True)
+    else:
+        st.warning("⚠️ No data in selected year range.")
+else:
+    st.warning("⚠️ No timeline data available.")
+
+st.markdown("---")
