@@ -14,3 +14,4 @@ logs
 streamlit_app/utils/__pycache__/queries.cpython-39.pyc
 streamlit_app/utils/__pycache__
 *__pycache__/
+streamlit_app\utils\__pycache__\db_connection.cpython-39.pyc

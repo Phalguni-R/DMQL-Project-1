@@ -12,9 +12,12 @@ import pydeck as pdk
 import os
 import random
 
-project_root = r"C:\Users\hb102\OneDrive\Documents\GitHub\DMQL-Project-1\streamlit_app"
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# project_root = r"C:\Users\hb102\OneDrive\Documents\GitHub\DMQL-Project-1\streamlit_app"
+
+# if project_root not in sys.path:
+#     sys.path.insert(0, project_root)
+
+sys.path.append('..')
 
 from utils.db_connection import execute_query
 from utils.queries_halle import (
@@ -41,7 +44,7 @@ st.markdown("Explore how top 100 artists...")
 # ============================================
 
 st.header("📊 Genre Trends over Time")
-st.markdown("Explore the history of different genres over time")
+st.markdown("Explore musical trends over time")
 
 year_range_df = execute_query(get_year_range())
 
@@ -58,8 +61,8 @@ if not year_range_df.empty:
         min_year = 1900
         max_year = 2025
 
-# Sidebar filters
-st.header("🎛️ Filter Settings")
+# Graph filters
+st.header("Filter Settings")
     
 # Year range filter
 st.subheader("Year Range")
@@ -185,7 +188,6 @@ with col1:
                     range=[year_range[0] - 0.5, year_range[1] + 0.5],
                     tickmode='linear',
                     tick0=year_range[0],
-                    dtick=10,
                     showgrid=False
                 )
             )
