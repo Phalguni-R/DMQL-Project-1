@@ -13,3 +13,4 @@ PerformanceTuningReport.docx
 logs
 streamlit_app/utils/__pycache__/queries.cpython-39.pyc
 streamlit_app/utils/__pycache__
+*__pycache__/
