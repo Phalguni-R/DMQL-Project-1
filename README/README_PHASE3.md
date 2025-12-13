@@ -107,6 +107,9 @@ docker compose up -d
 # Restart streamlit only
 docker compose restart streamlit
 
+# Stop streamlit only 
+docker compose stop streamlit
+
 # View logs
 docker compose logs -f streamlit
 

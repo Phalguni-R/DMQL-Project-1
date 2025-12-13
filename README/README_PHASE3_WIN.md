@@ -166,6 +166,11 @@ docker compose up -d
 docker compose restart streamlit
 ```
 
+**Stop Streamlit:**
+```bash
+docker compose stop streamlit
+```
+
 **Rebuild dbt:**
 ```bash
 cd fma_analytics && dbt run && cd ..
