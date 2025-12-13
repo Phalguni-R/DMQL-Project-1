@@ -4,6 +4,43 @@ All queries use dbt analytics tables for optimal performance
 """
 
 
+def get_artist_timeline_data(top_n: int = 10):
+    """
+    Query for Artist Timeline - Top N artists PER YEAR
+    """
+    query = f"""
+    WITH yearly_artist_listens AS (
+        SELECT 
+            a.artist_name,
+            EXTRACT(YEAR FROM t.track_date_recorded)::integer as year,
+            SUM(COALESCE(t.track_listens, 0)) as total_listens
+        FROM public."Artists" a
+        JOIN public."Tracks" t ON a.artist_id = t.artist_id
+        WHERE t.track_date_recorded IS NOT NULL
+          AND EXTRACT(YEAR FROM t.track_date_recorded) BETWEEN 2000 AND 2020
+        GROUP BY a.artist_name, EXTRACT(YEAR FROM t.track_date_recorded)
+        HAVING SUM(COALESCE(t.track_listens, 0)) > 100
+    ),
+    ranked_by_year AS (
+        SELECT 
+            year,
+            artist_name,
+            total_listens,
+            ROW_NUMBER() OVER (PARTITION BY year ORDER BY total_listens DESC) as rank_in_year
+        FROM yearly_artist_listens
+    )
+    SELECT 
+        year,
+        artist_name,
+        total_listens as popularity_score,
+        rank_in_year
+    FROM ranked_by_year
+    WHERE rank_in_year <= {top_n}
+    ORDER BY year, rank_in_year;
+    """
+    return query
+
+
 def get_genre_audio_features(selected_genres: list = None):
     """
     Query for Genre Radar Chart
