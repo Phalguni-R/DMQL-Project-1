@@ -115,3 +115,97 @@ else:
     st.warning("⚠️ No hidden gems found with these filters. Try adjusting the sliders.")
 
 st.markdown("---")
+
+# ============================================
+# VISUALIZATION 2: AUDIO FEATURES CORRELATION MATRIX
+# ============================================
+
+st.header("🔗 Audio Features Correlation Matrix")
+st.markdown("Discover how different audio characteristics relate to each other")
+
+# Genre filter
+col1, col2, col3 = st.columns([2, 1, 1])
+
+with col1:
+    genres_df = execute_query(get_available_genres_simple())
+    genre_options = ["All Genres"] + genres_df['genre_name'].tolist() if not genres_df.empty else ["All Genres"]
+    selected_genre = st.selectbox(
+        "Filter by Genre (optional)",
+        options=genre_options,
+        help="Analyze correlations for a specific genre"
+    )
+
+# Query data
+corr_df = execute_query(get_audio_features_correlation(selected_genre if selected_genre != "All Genres" else None))
+
+if not corr_df.empty and len(corr_df) > 10:
+    # Calculate correlation matrix
+    correlation_matrix = corr_df.corr()
+
+    # Create heatmap
+    fig = go.Figure(data=go.Heatmap(
+        z=correlation_matrix.values,
+        x=correlation_matrix.columns,
+        y=correlation_matrix.columns,
+        colorscale='RdBu',
+        zmid=0,
+        text=correlation_matrix.values,
+        texttemplate='%{text:.2f}',
+        textfont={"size": 10},
+        colorbar=dict(title="Correlation")
+    ))
+
+    fig.update_layout(
+        title=f"Audio Features Correlation - {selected_genre}",
+        xaxis_title="",
+        yaxis_title="",
+        height=600,
+        width=700
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Insights
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("🔍 Key Insights")
+
+        # Find strongest positive correlation (excluding diagonal)
+        corr_values = correlation_matrix.values
+        import numpy as np
+        np.fill_diagonal(corr_values, 0)
+        max_corr_idx = np.unravel_index(np.argmax(corr_values), corr_values.shape)
+        max_corr = corr_values[max_corr_idx]
+
+        st.metric(
+            "Strongest Positive Correlation",
+            f"{correlation_matrix.columns[max_corr_idx[0]]} ↔ {correlation_matrix.columns[max_corr_idx[1]]}",
+            f"{max_corr:.3f}"
+        )
+
+        # Find strongest negative correlation
+        min_corr_idx = np.unravel_index(np.argmin(corr_values), corr_values.shape)
+        min_corr = corr_values[min_corr_idx]
+
+        st.metric(
+            "Strongest Negative Correlation",
+            f"{correlation_matrix.columns[min_corr_idx[0]]} ↔ {correlation_matrix.columns[min_corr_idx[1]]}",
+            f"{min_corr:.3f}"
+        )
+
+    with col2:
+        st.subheader("📊 Sample Statistics")
+        st.metric("Tracks Analyzed", f"{len(corr_df):,}")
+        st.metric("Features Compared", len(correlation_matrix.columns))
+
+        # Average feature values
+        with st.expander("📈 Average Feature Values"):
+            avg_features = corr_df.mean().sort_values(ascending=False)
+            st.dataframe(avg_features.to_frame(name='Average Value'), use_container_width=True)
+
+else:
+    st.warning("⚠️ Not enough data to calculate correlations. Try selecting 'All Genres' or a different genre.")
+
+st.markdown("---")
+st.caption("Phalguni's Visualizations | DMQL Phase 3")
