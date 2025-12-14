@@ -36,5 +36,28 @@ def get_top_genres_yearly(year_start: int = None, year_end: int = None):
     WHERE yr_rank <= 10
     ORDER BY release_year DESC, yr_rank ASC;
     """
-
     return query
+
+def get_top_artists_yearly(year_start: int = None, year_end: int = None):
+    """ 
+    Get ranked artist yearly
+    """
+    
+    query = """
+        SELECT
+            prof.artist_id,
+            prof.artist_name,
+            top.release_year,
+            top.total_listens,
+            top.rank_in_year,
+            prof.top_genre,
+            prof.associated_labels
+        FROM analytics.mart_top_artists_yearly top
+        JOIN analytics.mart_artist_profiles prof on top.artist_name = prof.artist_name
+        WHERE rank_in_year <= 10
+        ORDER BY release_year DESC, rank_in_year ASC
+    """
+    
+    return query
+
+
