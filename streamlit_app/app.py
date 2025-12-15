@@ -53,7 +53,9 @@ with col2:
     
     **🎨 Phalguni's Visualizations:** (TODO)
     
-    **🎭 Halle's Visualizations:** (TODO)
+    **🎭 Halle's Visualizations:** 
+    - **Artist Popularity Timeline** - See the top artists in the FMA database during a fixed period of time
+    - **Genre Trend Timeline** - Explore musical genre trends over time
     
     Use the sidebar to navigate between different visualizations.
     """)
