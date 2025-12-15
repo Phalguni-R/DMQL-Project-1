@@ -43,17 +43,21 @@ with col2:
     st.markdown("""
     ### Welcome to the FMA Analytics Dashboard!
 
-    This dashboard provides interactive visualizations of music data from the Free Music Archive (FMA).
+    This interactive dashboard provides deep insights into music data from the Free Music Archive (FMA),
+    built on a modern data stack with PostgreSQL, dbt, and Docker.
     
     **Available Visualizations:**
     
     **🎯 Arun's Visualizations:**
-    - **Genre Radar Chart** - Compare audio features (energy, danceability, acousticness, etc.) across different music genres
+    - **Genre Radar Chart** - Compare audio features (energy, danceability, acousticness, etc.) across different music genres using sports-style analytics
     - **Artist Geographic Heatmap** - Explore where artists are located worldwide and their popularity by region
+    - **Artist Popularity Timeline** - Watch top artists rise and fall through the years with an animated bar chart race
     
-    **🎨 Phalguni's Visualizations:** (TODO)
+    **🎨 Phalguni's Visualizations:**
+    - **Hidden Gems Discovery** - Find high-quality tracks with low listen counts - undiscovered musical treasures
+    - **Audio Features Correlation Matrix** - Discover how different audio characteristics relate to each other
     
-    **🎭 Halle's Visualizations:** 
+    **🎭 Halle's Visualizations:**
     - **Artist Popularity Timeline** - See the top artists in the FMA database during a fixed period of time
     - **Genre Trend Timeline** - Explore musical genre trends over time
     
@@ -80,5 +84,6 @@ st.markdown("""
 <div style='text-align: center; color: #666;'>
     <p>DMQL Project - Phase 3 | Data Management & Query Languages</p>
     <p>Free Music Archive Analytics Dashboard</p>
+    <p>16,916 Artists • 95,557 Tracks • 162 Genres</p>
 </div>
 """, unsafe_allow_html=True)
